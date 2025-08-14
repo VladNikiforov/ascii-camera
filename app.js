@@ -1,13 +1,13 @@
 const asciiChars = ' .:-=+*#%@'
 const video = document.createElement('video')
 video.autoplay = true
-video.playsInline = true // important for iOS Safari
+video.playsInline = true
 
 let width, height
 
 function resizeASCII() {
-  const charWidth = 6    // matches CSS font-size in px
-  const charHeight = 6   // matches CSS line-height in px
+  const charWidth = 12
+  const charHeight = 12
   width = Math.floor(window.innerWidth / charWidth)
   height = Math.floor(window.innerHeight / charHeight)
 }
