@@ -1,5 +1,4 @@
-const asciiChars =
-  ' .\'`^",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$'
+const asciiChars = ' .:-=+*#%@'
 const video = document.createElement('video')
 video.autoplay = true
 video.playsInline = true
