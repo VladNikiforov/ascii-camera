@@ -1,54 +1,63 @@
-const asciiChars = ' .:-=+*#%@'
+const asciiChars =
+  ' .\'`^",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$'
 const video = document.createElement('video')
 video.autoplay = true
 video.playsInline = true
 
-let width, height
+const canvas = document.getElementById('asciiCanvas')
+const ctx = canvas.getContext('2d')
 
-function resizeASCII() {
-  const charWidth = 12
-  const charHeight = 12
-  width = Math.floor(window.innerWidth / charWidth)
-  height = Math.floor(window.innerHeight / charHeight)
-}
-resizeASCII()
-window.addEventListener('resize', resizeASCII)
+const cols = 80
+const rows = 60
+const tempCanvas = document.createElement('canvas')
+tempCanvas.width = cols
+tempCanvas.height = rows
+const tempCtx = tempCanvas.getContext('2d')
 
-navigator.mediaDevices.getUserMedia({ video: true })
-  .then(stream => {
+navigator.mediaDevices
+  .getUserMedia({ video: true })
+  .then((stream) => {
     video.srcObject = stream
     video.play()
-    processFrame()
+    requestAnimationFrame(drawASCII)
   })
-  .catch(err => {
-    document.getElementById('ascii').textContent = 'Camera access denied.'
-    console.error(err)
-  })
+  .catch(console.error)
 
-function processFrame() {
-  const canvas = document.createElement('canvas')
-  const ctx = canvas.getContext('2d')
-  canvas.width = width
-  canvas.height = height
+let lastTime = 0
+function drawASCII(timestamp) {
+  if (timestamp - lastTime < 50) {
+    requestAnimationFrame(drawASCII)
+    return
+  }
+  lastTime = timestamp
 
-  ctx.drawImage(video, 0, 0, width, height)
-  const frame = ctx.getImageData(0, 0, width, height)
-  const pixels = frame.data
-  let ascii = ''
+  canvas.width = window.innerWidth
+  canvas.height = window.innerHeight
+  const charWidth = canvas.width / cols
+  const charHeight = canvas.height / rows
 
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const i = (y * width + x) * 4
-      const avg = (pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3
-      const char = asciiChars[Math.floor(avg / 256 * asciiChars.length)]
-      ascii += char
+  tempCtx.drawImage(video, 0, 0, cols, rows)
+  const frame = tempCtx.getImageData(0, 0, cols, rows).data
+
+  ctx.fillStyle = 'black'
+  ctx.fillRect(0, 0, canvas.width, canvas.height)
+  ctx.fillStyle = 'white'
+  ctx.font = `${charHeight}px monospace`
+  ctx.textBaseline = 'top'
+
+  for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < cols; x++) {
+      const i = (y * cols + x) * 4
+      const avg = (frame[i] + frame[i + 1] + frame[i + 2]) / 3
+      const char = asciiChars[Math.floor((avg / 256) * asciiChars.length)]
+      ctx.fillText(char, canvas.width - (x + 1) * charWidth, y * charHeight)
     }
-    ascii += '\n'
   }
 
-  document.getElementById('ascii').textContent = ascii
-  requestAnimationFrame(processFrame)
+  requestAnimationFrame(drawASCII)
 }
+
+window.addEventListener('resize', drawASCII)
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./service-worker.js')
