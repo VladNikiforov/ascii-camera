@@ -16,20 +16,29 @@
         padding: 0;
         width: 100%;
         height: 100%;
-        overflow: hidden;
         background: black;
+        color: white;
+        overflow: hidden;
+        font-family: monospace;
+        font-size: 8px;
+        line-height: 8px;
       }
 
-      canvas {
-        display: block;
-        width: 100%;
+      pre {
+        margin: 0;
+        white-space: pre;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
         height: 100%;
+        width: 100%;
       }
     </style>
   </head>
 
   <body>
-    <canvas id="asciiCanvas"></canvas>
+    <pre id="asciiOutput"></pre>
     <script src="app.js"></script>
   </body>
 </html>
